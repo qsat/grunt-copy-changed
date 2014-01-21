@@ -111,7 +111,7 @@ module.exports = function(grunt) {
 
           grunt.verbose.ok(dict[filepath] +"  "+ checksum);
 
-          flg = dict[filepath] !== checksum;
+          flg = typeof dict[filepath] == "undefined" || dict[filepath] !== checksum;
           dict[filepath] = checksum;
         }
         if ( flg ) {
