@@ -33,7 +33,7 @@ module.exports = function(grunt) {
       options: {
         watchTask: false,
         checksum: true,
-        dest: "_mod",
+        dest: "__modified",
         dirs: ['htdocs/**/']
       }
     },

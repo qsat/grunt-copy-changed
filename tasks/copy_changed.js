@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
-  'use strict'
+  'use strict';
+
 
   var _ = require('lodash'),
       fs = require('fs'),
@@ -15,8 +16,9 @@ module.exports = function(grunt) {
 
     options = this.options({
       src: ['.'],
-      dest: '_modified',
-      checksum: false
+      dest: '__modified',
+      checksum: false,
+      watchTask: false
     });
 
 
@@ -26,14 +28,13 @@ module.exports = function(grunt) {
     function onDirChange(event, filename, dir) {
       var filepath = path.join(dir || '', filename || '').replace(/\\/g, '/');
 
-
       if( !fs.existsSync(filepath) ) return;
 
       if (fs.statSync(filepath).isDirectory()) {
-        return _.debounce(startWatch, 1000);
+        startWatch = _.debounce(startWatch, 1000);
+      } else {
+        onFileChange(filepath);
       }
-
-      onFileChange(filepath);
     }
 
     function onFileChange(filepath){
@@ -54,12 +55,13 @@ module.exports = function(grunt) {
 
     function restart(){
       if( restartTimer ) clearTimeout(restartTimer);
+      
       restartTimer = setTimeout(function(){
         done();
         grunt.task.run([taskName]);
         executedThisTime = false;
         restartTimer = null;
-      }, 200);
+      }, 2000);
     }
 
     function storeChecksum(dirs) {
@@ -91,7 +93,7 @@ module.exports = function(grunt) {
       watchers.forEach(function(watcher){
         watcher.close();
       });
-      return [];
+      return (watchers = []);
     }
 
     var waitTryCount = 0;
@@ -128,7 +130,6 @@ module.exports = function(grunt) {
         timerid = setTimeout(waitFileUnlock, 20);
       }
     }
-
 
     if( firstExecute ) {
       closeWatch(watchers);
