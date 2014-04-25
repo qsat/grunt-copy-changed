@@ -98,7 +98,7 @@ module.exports = function(grunt) {
 
     var waitTryCount = 0;
     function waitFileUnlock(filepath){
-      var checksum, content, flg = true, isLocked = false;
+      var checksum, content = false, flg = true, isLocked = false;
       waitTryCount++;
 
       try {
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
       }
 
       if(!isLocked || waitTryCount > 50) {
-        if ( options.checksum ) {
+        if ( options.checksum && content ) {
           checksum = require('crypto').createHash('md5').update(content).digest('hex');
 
           grunt.verbose.ok(dict[filepath] +"  "+ checksum);
